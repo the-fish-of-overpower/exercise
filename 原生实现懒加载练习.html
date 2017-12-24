@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        img{width:400px;height:300px;margin-top:50px;display:block}
+    </style>
+</head>
+<body>
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww1.sinaimg.cn/large/006y8mN6gw1fa7kaed2hpj30sg0l9q54.jpg" alt="">  
+        <img src="" data-src="http://ww1.sinaimg.cn/large/006y8mN6gw1fa7kaed2hpj30sg0l9q54.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww1.sinaimg.cn/large/006y8mN6gw1fa7kaed2hpj30sg0l9q54.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+        <img src="" data-src="http://ww4.sinaimg.cn/large/006y8mN6gw1fa5obmqrmvj305k05k3yh.jpg" alt="">  
+</body>
+    <script>
+        let n = 0
+        let oImg = document.getElementsByTagName("img")
+        lazyLoad()
+        function lazyLoad(){
+            let seeHeight = document.documentElement.clientHeight
+            let scrollTop = document.documentElement.scrollTop||document.body.scrollTop
+            console.log(seeHeight,scrollTop)
+            for(let i = n;i < oImg.length;i++){
+                if(oImg[i].offsetTop < seeHeight + scrollTop){
+                    if(oImg[i].getAttribute("src") == ""){
+                        oImg[i].src = oImg[i].getAttribute("data-src")
+                    }
+                    n ++
+                } 
+            }
+        }
+        
+        function throttle(fun,delay,time){
+            // clearTimeout(timer)
+            console.log(1)
+            var timer 
+            let startTime = new Date()
+            return function(){
+                console.log(2)
+                clearTimeout(timer)  //外面的只执行一次，之后只监听return回去的
+                let curTime = new Date()
+                if(curTime - startTime > time){
+                    fun()
+                    startTime = curTime
+                }else{
+                    timer = setTimeout(function(){
+                        fun()
+                    },delay)
+                }  
+            }
+        }
+        addEventListener("scroll",throttle(lazyLoad,1000,1000))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /*   let n = 0
+        let oImg = document.getElementsByTagName("img")
+        
+        lazyLoad()
+        function lazyLoad(){
+            var seeHeight = document.documentElement.clientHeight
+            var ST = document.documentElement.scrollTop||document.body.scrollTop
+            console.log(ST)
+            console.log("lazyLoad")
+            for(var i = n;i < oImg.length;i++){
+                if(oImg[i].offsetTop < seeHeight + ST ){
+                    if(oImg[i].getAttribute("src") == ""){
+                       oImg[i].src = oImg[i].getAttribute("data-src") 
+                    }
+                    n = i + 1
+                }
+            } 
+        } 
+        //fun 要执行的函数
+        //delay 延迟
+        //time 规定时间内必须加载一次
+        function throttle(fun,delay,time){
+            clearTimeout(timer)
+            var timer
+            var startTime = new Date()
+            return function(){
+                var curTime = new Date()
+                if(curTime - startTime > time){
+                    fun()
+                    startTime = curTime
+                }else{
+                    timer = setTimeout(function(){
+                        fun()
+                    },delay)
+                } 
+            }  
+        }
+
+        window.addEventListener("scroll",throttle(lazyLoad,500,1000)) */
+    </script>
+</html>
