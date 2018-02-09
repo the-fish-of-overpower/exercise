@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        function test1(a){
+            console.log(a)
+        }
+        function test2(a,b){
+            console.log(a+b)
+        }
+        function test3(a,b,c){
+            console.log(a+b+c)
+        }
+        function test4(a,b,c,d){
+            console.log(a+b+c+d)
+        }
+        function test(first,sec,rd,four){
+            if(arguments.length == 1){
+                test1(first)
+            }else if(arguments.length == 2){
+                test2(first,sec)
+            }else if(arguments.length == 3){
+                //假设第三个和第四个都是选填项，那么需要在这单独判断（比如 array.length）
+                test3(first,sec,rd)
+                //test3(first,sec,four)
+            }else if(arguments.length == 4){
+                test4(first,sec,rd,four)
+            }
+        }
+        test("就一个参数","第二个参数")
+        test("就一个参数","第二个参数","第三个参数","第四个参数")
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main.css"/>
+    <style type="text/css">
+      body,html,#container{
+        height: 100%;
+        margin: 0px;
+      }
+    </style>
+    <title>弟弟厕所</title>
+  </head>
+  <body>
+    <div id="container" tabindex="0"></div>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=a31801f929ecfbc4942c1d4b8518093f"></script>
+    
+    <script type="text/javascript">
+        function DDMap(){
+            this.map = null;
+            this.InitialPosition = null;
+            this.curPosition = null;
+            this.desPosition = null;
+            this.clearStatus = true;
+        }
+        DDMap.prototype = {
+            init : function(){
+                this.createMap()
+                this.getLocation()
+                this.toolBar()
+                this.bindEvent()
+            },
+            getLocation(){
+                this.map.plugin('AMap.Geolocation', function () {
+                    var geolocation = new AMap.Geolocation({
+                        timeout: 10000,          
+                        convert: true,           
+                        panToLocation: true    
+                    });
+                    geolocation.getCurrentPosition();
+                    AMap.event.addListener(geolocation, 'complete', this.getLocationSucc.bind(this));//返回定位信息
+                    AMap.event.addListener(geolocation, 'error', this.getLocationErr.bind(this));      //返回定位出错信息
+                }.bind(this));
+            },
+            getLocationSucc(e){
+                this.InitialPosition = [e.position.lng,e.position.lat]
+                //初次获取位置后开始调用
+                this.map.setCenter(this.InitialPosition)
+                this.createCircle.call(this,this.InitialPosition)
+                this.circumSearch.call(this,this.InitialPosition)
+            },
+            getLocationErr(){
+                console.log("获取位置失败")
+            },
+            createMap(){
+                this.map = new AMap.Map('container',{
+                    resizeEnable: true,
+                    zoom:15
+                });
+            },
+            bindEvent(){
+                console.log("bindEvent")
+                this.map.on("moveend",this.moveEndHandler.bind(this))
+            },
+            toolBar(){
+                AMap.plugin(['AMap.ToolBar','AMap.Scale'],function(){
+                    var toolBar = new AMap.ToolBar();
+                    var scale = new AMap.Scale();
+                    this.map.addControl(toolBar);
+                    this.map.addControl(scale);
+                }.bind(this))
+            },
+            createCircle(position){
+                new AMap.Circle({
+                    center: position,
+                    radius: 500,
+                    fillOpacity:0.2,
+                    map:this.map
+                })
+            },
+            circumSearch(position){
+                AMap.service(["AMap.PlaceSearch"], function() {
+                    var placeSearch = new AMap.PlaceSearch({ //构造地点查询类
+                        pageSize: 5,
+                        typ:'餐饮服务',
+                        pageIndex: 1,
+                        city: "011" //城市
+                    });
+                    //中心点坐标
+                    var cpoint = position
+                    placeSearch.searchNearBy('卫生间', cpoint, 500, function(status, result) {
+                        this.map.setZoom(15)
+                        if(status === "complete"){
+                            for(var i = 0;i < result.poiList.pois.length;i++){
+                                var marker = new AMap.Marker({
+                                    position: [result.poiList.pois[i].location.lng,result.poiList.pois[i].location.lat],
+                                    offset: new AMap.Pixel(-10,0),
+                                    map: this.map
+                                });
+                                marker.on("click",this.markerClickHandler.bind(this))
+                            }
+                        }
+                    }.bind(this));    
+                }.bind(this));
+            },
+            moveEndHandler(){
+                if(this.clearStatus){
+                    this.map.clearMap()
+                    var lnglat = this.map.getCenter()
+                    this.curPosition = [lnglat.lng , lnglat.lat]
+                    this.createCircle.call(this,this.curPosition)
+                    this.circumSearch.call(this,this.curPosition)
+                } 
+            },
+            markerClickHandler(e){
+                this.map.clearMap()
+                this.clearStatus = false
+                this.desPosition = [e.lnglat.lng,e.lnglat.lat]
+                AMap.service(["AMap.Walking"], function() {
+                    var MWalk = new AMap.Walking({
+                        map: this.map
+                    }); //构造路线导航类
+                    //根据起终点坐标规划步行路线
+                    MWalk.search(this.InitialPosition, this.desPosition, function(status, result){
+                        console.log(status)
+                    })
+                }.bind(this));
+            }
+        }
+        var ddMap = new DDMap()
+        ddMap.init()
+        
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
+  </body>
+</html>
